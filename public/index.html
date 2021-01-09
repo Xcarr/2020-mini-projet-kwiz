@@ -39,9 +39,9 @@
 
 <div id="Tentative ajout joueurs">
     <div class="myPseudo">
-        <input type="text" class="form-control"
+        <input id="pseudo" type="text" class="form-control"
                placeholder="Saisissez votre pseudo" name="pseudo">
-        <input id="firstBtn" type="button" class="btn btn-primary text-center" value="Enter"/>
+        <p><input id="firstBtn" type="button" class="btn btn-primary text-center" value="Enter"/></p>
         <script>
             var socket = io.connect('http://localhost:8080');
             var button = document.getElementById("firstBtn");
@@ -49,11 +49,13 @@
             button.addEventListener("click", myFunction);
 
             function myFunction() {
-                socket.emit("message", "salut comment ça va ?");
+                socket.emit("message", pseudo.value);
+                console.log(pseudo.value)
             }
 
             socket.on('message', function(message) {
-                console.log(message);
+                var pseudoPerso = message;
+                window.alert(pseudoPerso);
             })
 
         </script>

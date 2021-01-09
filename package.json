@@ -12,6 +12,6 @@
     "express": "^4.16.2",
     "serve-favicon": "^2.4.5",
     "soc": "^0.2.0",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.4.1"
   }
 }
