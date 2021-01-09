@@ -1,0 +1,35 @@
+body {
+    font: 12pt "Lucida Grande", Helvetica, Arial, sans-serif;
+    background-color: whitesmoke;
+}
+
+.jumbotron{
+    background-color: #FFC300;
+}
+
+.question-block{
+    border-color: #048BA8;
+    border-radius: 10px;
+    border-style: solid;
+    margin-bottom:10px;
+    padding:10px;
+    background-color: lightgoldenrodyellow ;
+}
+
+.question{
+    padding:10px;
+    font-weight: bold;
+}
+
+.answers{
+    padding-bottom:10px;
+}
+
+.answer{
+    padding: 5px;
+}
+
+#site-footer{
+    background-color: #FFC300;
+    padding : 20px;
+}
