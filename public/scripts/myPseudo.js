@@ -3,6 +3,7 @@ console.log(button);
 button.addEventListener("click", myFunction);
 var nbClients = 0;
 
+//Rend visible la suite du site, et invisible la partie précédente
 function myFunction() {
     kwiz.socket.emit("verifPseudo", pseudo.value);
     kwiz.socket.on('pseudoExistant', function(existant) {
@@ -30,4 +31,3 @@ function myFunction() {
         document.getElementById(nbPlayers.innerHTML = "Nombre de joueurs : " + nbClients++ );
     });
 }
-

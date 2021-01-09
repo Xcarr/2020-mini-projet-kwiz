@@ -93,6 +93,30 @@ kwiz.createQuestions = function (data) {
 
 kwiz.createClickListener = function (radio, questionId, option) {
     radio.onclick = function () {
-       console.log("question", questionId, "option", option);
+        console.log(kwiz.get_answers_counts + "=====");
+        //Evolution de la grille quand un joueur sélectionne une réponse.
+        if (questionId==="q1"){
+            document.querySelector("#counter_q1_0").innerHTML= 7 + "/" + kwiz.clients_nb;
+            document.querySelector("#counter_q1_2").innerHTML= 7 + "/" + kwiz.clients_nb;
+            document.querySelector("#counter_q1_1").innerHTML= 7 + "/" + kwiz.clients_nb;
+        } if (questionId==="q2"){
+            document.querySelector("#counter_q2_0").innerHTML= 7 + "/" + kwiz.clients_nb;
+            document.querySelector("#counter_q2_1").innerHTML= 7 + "/" + kwiz.clients_nb;
+            document.querySelector("#counter_q2_2").innerHTML= 7 + "/" + kwiz.clients_nb;
+        } if (questionId==="q3") {
+            document.querySelector("#counter_q3_0").innerHTML= 7 + "/" + kwiz.clients_nb;
+            document.querySelector("#counter_q3_1").innerHTML= 7 + "/" + kwiz.clients_nb;
+            document.querySelector("#counter_q3_2").innerHTML= 7 + "/" + kwiz.clients_nb;
+        }
+
+        //Evolution de la grille quand tous les joueurs ont sélectionné une réponse à une question
+        if ("nbJcheck" === "nbJtot"){
+
+        }
+
+        //réponse à la question 1
+        kwiz.quiz[0].answer;
+
+        console.log("question", questionId, "\n", "option", option);
     }
 };
