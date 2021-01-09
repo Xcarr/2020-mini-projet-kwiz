@@ -38,32 +38,14 @@
 </div>
 
 <div id="Tentative ajout joueurs">
-    <div class="myPseudo">
+    <div id="myPseudo">
         <input id="pseudo" type="text" class="form-control"
                placeholder="Saisissez votre pseudo" name="pseudo">
         <p><input id="firstBtn" type="button" class="btn btn-primary text-center" value="Enter"/></p>
-        <script>
-            var socket = io.connect('http://localhost:8080');
-            var button = document.getElementById("firstBtn");
-            console.log(button);
-            button.addEventListener("click", myFunction);
-
-            function myFunction() {
-                socket.emit("message", pseudo.value);
-                console.log(pseudo.value)
-
-                window.alert(pseudo.value);
-            }
-
-            socket.on('message', function(message) {
-                var pseudoPerso = message;
-                window.alert(pseudoPerso);
-            })
-
-        </script>
+        <script src="scripts/myPseudo.js"></script>
     </div>
 
-    <div class="players">
+    <div id="players" style="visibility: hidden">
         <table class="table table-striped table-bordered">
             <thead class="thead-dark">
                 <tr>
@@ -85,11 +67,11 @@
                 </tr>
             </tbody>
         </table>
+        <button class="btn btn-danger">Let's Gooooo</button>
     </div>
-    <button class="btn btn-danger">Let's Gooooo</button>
 </div>
 
-<div class="container">
+<div class="container" style="visibility: hidden">
     <!-- Template for adding questions -->
 
     <template id="question_block">
