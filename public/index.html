@@ -51,6 +51,8 @@
             function myFunction() {
                 socket.emit("message", pseudo.value);
                 console.log(pseudo.value)
+
+                window.alert(pseudo.value);
             }
 
             socket.on('message', function(message) {
