@@ -3,6 +3,7 @@ var button = document.getElementById("firstBtn");
 console.log(button);
 button.addEventListener("click", myFunction);
 
+//Rend visible la suite du site, et invisible la partie précédente
 function myFunction() {
     socket.emit("message", pseudo.value);
     console.log(pseudo.value)
@@ -10,6 +11,7 @@ function myFunction() {
     document.getElementById(myPseudo.style.visibility='hidden');
 }
 
+//Envoie le pseudo sur le serveur
 socket.on('message', function(message) {
     var pseudoPerso = message;
 })

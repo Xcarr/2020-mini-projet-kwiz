@@ -96,7 +96,7 @@ kwiz.createClickListener = function (radio, questionId, option) {
     radio.onclick = function () {
         //Evolution de la grille quand un joueur sélectionne une réponse.
         if (questionId==="q1"){
-            document.querySelector("#counter_q1_0").innerHTML="nbJcheck"+"/"+"nbJtot";
+            document.querySelector("#counter_q1_0").innerHTML="1"+"/"+"nbJtot";
             document.querySelector("#counter_q1_2").innerHTML="nbJcheck"+"/"+"nbJtot";
             document.querySelector("#counter_q1_1").innerHTML="nbJcheck"+"/"+"nbJtot";
         } if (questionId==="q2"){
