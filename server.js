@@ -15,6 +15,7 @@ const kwiz = require('./kwiz_module/kwiz_module');
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
+
 //server static file in the public directory
 app.use(express.static(__dirname + '/public'))
     .use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -39,6 +40,7 @@ io.on('connection', function (socket) {
             socket.emit("pseudoExistant", "false");
             kwiz.set_client_name(clientID, clientName);
             console.log(kwiz.get_clients_names());
+            socket.broadcast.emit("newClient");
         }
     });
 
@@ -47,6 +49,10 @@ io.on('connection', function (socket) {
         console.log('Un client est déconnecté !');
         console.log(kwiz.clients_count());
     });
+    socket.on('getNbClients', function() {
+        socket.emit("nbClients", kwiz.clients_count());
+    });
+
 });
 
 server.listen(8080);
