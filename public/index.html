@@ -33,7 +33,7 @@
     <div class="container">
         <h1>Kwizzz</h1>
         <p>Interactive and Multi-User Quizz.</p>
-        <p style="font-size: 9px">Powered by Xavier Carrau</p>
+        <p style="font-size: 9px">Powered by Xavier Carrau & Claire Chatenet</p>
     </div>
 </div>
 
@@ -67,13 +67,13 @@
                 </tr>
             </tbody>
         </table>
-        <button class="btn btn-danger">Let's Gooooo</button>
+        <p><input id="letsGo" type="button" class="btn btn-danger" value="Let's Gooooooo"/></p>
+        <script src="scripts/Players.js"></script>
     </div>
 </div>
 
-<div class="container" style="visibility: hidden">
+<div id="questions" class="container" style="visibility: hidden">
     <!-- Template for adding questions -->
-
     <template id="question_block">
         <div class="question-block">
             <div class="question row">
