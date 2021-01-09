@@ -1,15 +1,18 @@
-var socket = io.connect('http://localhost:8080');
 var button = document.getElementById("firstBtn");
 console.log(button);
 button.addEventListener("click", myFunction);
 
 function myFunction() {
-    socket.emit("message", pseudo.value);
-    console.log(pseudo.value)
-    document.getElementById(players.style.visibility='visible');
-    document.getElementById(myPseudo.style.visibility='hidden');
+    kwiz.socket.emit("verifPseudo", pseudo.value);
+    kwiz.socket.on('pseudoExistant', function(existant) {
+        console.log(existant);
+        if(existant=="true") {
+            window.alert("Pseudo déjà existant. Veuillez en choisir un nouveau");
+        }
+        else {
+            document.getElementById(players.style.visibility='visible');
+            document.getElementById(myPseudo.style.visibility='hidden');
+        }
+    });
 }
 
-socket.on('message', function(message) {
-    var pseudoPerso = message;
-})

@@ -19,7 +19,6 @@ kwiz.setupUI = function () {
 };
 
 kwiz.createQuestions = function (data) {
-
     //store the data
     kwiz.quiz = data.quiz;
     kwiz.quiz_elem = {};
