@@ -1,6 +1,11 @@
-var socket = io.connect('http://localhost:8080');
 var button = document.getElementById("letsGo");
 console.log(button);
+
+//Ajout des joueurs dans le tableau
+    var names = undefined;
+    kwiz.socket.on('names', kwiz.get_clients_names());
+    console.log(names);
+
 button.addEventListener("click", myFunction);
 
 //Rend visible la suite du site, et invisible la partie précédente
