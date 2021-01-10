@@ -1,6 +1,6 @@
 let kwiz;
 kwiz = {
-    socket: 'undefined',
+    socket: io('http://localhost:8080'),
     content: 'undefined',
     counter: 'undefined',
     clients_nb: 0,
@@ -9,7 +9,7 @@ kwiz = {
 
 kwiz.start = function () {
     kwiz.setupUI();
-    kwiz.socket = io('http://localhost:8080');
+    //kwiz.socket = io('http://localhost:8080');
     kwiz.socket.on('quiz', kwiz.createQuestions);
 };
 
@@ -120,3 +120,19 @@ kwiz.createClickListener = function (radio, questionId, option) {
         console.log("question", questionId, "\n", "option", option);
     }
 };
+
+kwiz.socket.on('clientConnected', function (nbCli) {
+    console.log("Nouveau client");
+    document.getElementById(nbPlayers.innerHTML = "Nombre de joueurs : " + nbCli);
+});
+
+
+kwiz.socket.on('clientDisconnected', function (nbCli) {
+    console.log("Client déco");
+    document.getElementById(nbPlayers.innerHTML = "Nombre de joueurs : " + nbCli);
+});
+
+
+
+
+

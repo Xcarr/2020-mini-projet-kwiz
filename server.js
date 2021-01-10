@@ -39,13 +39,14 @@ io.on('connection', function (socket) {
         else {
             socket.emit("pseudoExistant", "false");
             kwiz.set_client_name(clientID, clientName);
+            socket.broadcast.emit("clientConnected", kwiz.clients_count());
             console.log(kwiz.get_clients_names());
-            socket.broadcast.emit("newClient");
         }
     });
 
     socket.on('disconnect', function() {
         kwiz.remove_client(clientID);
+        socket.broadcast.emit("clientDisconnected", kwiz.clients_count());
         console.log('Un client est déconnecté !');
         console.log(kwiz.clients_count());
     });
