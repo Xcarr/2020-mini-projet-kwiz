@@ -27,34 +27,58 @@ io.on('connection', function (socket) {
     console.log(kwiz.clients_count());
     let clientID = socket.id;
     kwiz.add_client(clientID);
-    //console.log(kwiz.clients_count());
+
+
     //send the questions to the client
     socket.emit("quiz", kwiz.questions());
+    socket.emit("pseudo");
 
-    socket.on('verifPseudo', function(clientName) {
+    socket.on('pseudoCheck', function(clientName) {
         let list_clients = kwiz.get_clients_names();
-        if(list_clients.includes(clientName)) {
-            socket.emit("pseudoExistant", "true");
+        console.log(clientName + " : taille")
+        if(list_clients.includes(clientName) || clientName.size < 1) {
+            socket.emit("existant", "true");
         }
         else {
-            socket.emit("pseudoExistant", "false");
+            socket.emit("existant", "false");
             kwiz.set_client_name(clientID, clientName);
-            socket.broadcast.emit("clientConnected", kwiz.clients_count());
-            console.log(kwiz.get_clients_names());
+            io.emit("Connexion", kwiz.clients_count());
         }
     });
+
+
 
     socket.on('disconnect', function() {
         kwiz.remove_client(clientID);
-        socket.broadcast.emit("clientDisconnected", kwiz.clients_count());
-        console.log('Un client est déconnecté !');
-        console.log(kwiz.clients_count());
-    });
-    socket.on('getNbClients', function() {
-        socket.emit("nbClients", kwiz.clients_count());
+        io.emit("Disconnexion", kwiz.clients_count());
+
     });
 
+    socket.on("play", function (){
+        io.emit('begin', "true")
+    });
+
+    socket.on('getNbClients', function() {
+        io.emit('nbClients', kwiz.clients_count());
+        io.emit("listeCl", kwiz.get_clients_names())
+    });
+
+    socket.on('getNbRep', function (questionId, option){
+        io.emit('nbRep', kwiz.get_answers_counts(), questionId, option);
+    })
+
+    socket.on('mesRep', function (id, quest, opt){
+        kwiz.update_client_answer(id, quest, opt);
+    })
+
+    socket.on("stopQuestion", function (questionId, nbRep, option){
+        io.emit("disRadio", questionId, nbRep, option);
+    })
 });
+
+
+
+
 
 
 server.listen(8080);

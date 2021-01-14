@@ -33,20 +33,19 @@
     <div class="container">
         <h1>Kwizzz</h1>
         <p>Interactive and Multi-User Quizz.</p>
-        <p style="font-size: 9px">Powered by Xavier Carrau & Claire Chatenet</p>
+        <p style="font-size: 9px">Powered by Xavier Carrau</p>
     </div>
 </div>
 
-<div id="Tentative ajout joueurs">
+<div id="joueurs" class="container">
     <div id="myPseudo">
         <input id="pseudo" type="text" class="form-control"
                placeholder="Saisissez votre pseudo" name="pseudo">
         <p><input id="firstBtn" type="button" class="btn btn-primary text-center" value="Enter"/></p>
-        <script src="scripts/myPseudo.js"></script>
     </div>
 
-    <div id="player" class="p-3 mb-2 bg-warning text-dark" style="visibility: hidden">
-        <label id="namePlayer"></label>
+    <div id="bandeau" class="alert alert-primary d-flex" style="visibility: hidden">
+        <div class="mr-auto" id="namePlayer"></div>
         <label id="nbPlayers"></label>
     </div>
 
@@ -54,26 +53,14 @@
         <table class="table table-striped table-bordered">
             <thead class="thead-dark">
                 <tr>
-                    <th class="text-center">Pseudo</th>
+                    <th class="text-center">Participants</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td class="text-center">Nom du type qui se connecte</td>
-                </tr>
-                <tr>
-                    <td class="text-center">Nom du type qui se connecte</td>
-                </tr>
-                <tr>
-                    <td class="text-center">Nom du type qui se connecte</td>
-                </tr>
-                <tr>
-                    <td class="text-center">Nom du type qui se connecte</td>
-                </tr>
+            <tbody id="scoreTable">
+
             </tbody>
         </table>
-        <p><input id="letsGo" type="button" class="btn btn-danger" value="Let's Gooooooo"/></p>
-        <script src="scripts/players.js"></script>
+        <p><input id="letsGo" type="button" class="btn btn-danger" value="Démarrer la partie"/></p>
     </div>
 </div>
 
@@ -105,6 +92,9 @@
     <div id="content"></div>
 </div>
 
+<div class="alert alert-primary d-flex container">
+    <div class="mr-auto" id="score">Votre score : 0</div>
+</div>
 
 <footer id="site-footer" class="text-muted">
     <div class="container">

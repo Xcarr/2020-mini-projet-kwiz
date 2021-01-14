@@ -1,6 +1,6 @@
 let kwiz;
 kwiz = {
-    socket: io('http://localhost:8080'),
+    socket: 'undefined',
     content: 'undefined',
     counter: 'undefined',
     clients_nb: 0,
@@ -9,9 +9,86 @@ kwiz = {
 
 kwiz.start = function () {
     kwiz.setupUI();
-    //kwiz.socket = io('http://localhost:8080');
+    kwiz.socket = io('http://localhost:8080');
+    kwiz.connect();
+    // create the quiz questions
     kwiz.socket.on('quiz', kwiz.createQuestions);
+
+    // wait for number of clients
+    kwiz.socket.on('nbClients', function(clients_nb) {
+        kwiz.clients_nb = clients_nb;
+        document.getElementById(nbPlayers.innerHTML = "Nombre de joueurs : "+ clients_nb );
+    });
+
+    // print the players in the table
+    kwiz.socket.on("listeCl", function (list_clients) {
+
+        while (document.getElementById("scoreTable").firstChild) {
+            document.getElementById("scoreTable").removeChild(document.getElementById("scoreTable").firstChild);
+        }
+
+        for (i=0; i<list_clients.length; i++){
+            if (list_clients[i] !== null) {
+                let player = document.createTextNode(list_clients[i]);
+                document.getElementById("scoreTable").insertRow().insertCell().appendChild(player);
+            }
+        }
+    });
+
+    // check if "pseudo" exists and go to the next step
+    kwiz.socket.on('existant', function(existant) {
+        //Si le pseudo est déjà pris par un autre joueur
+        if (existant === "true") {
+            window.alert("Pseudo impossible à pourvoir. ");
+        } else {
+            document.getElementById(namePlayer.style.visibility='visible');
+            document.getElementById(bandeau.style.visibility='visible');
+            document.getElementById(players.style.visibility='visible');
+            document.getElementById(myPseudo.style.visibility='hidden');
+            document.getElementById(namePlayer.innerHTML = "Votre Pseudo : " + pseudo.value);
+        }
+    });
+
+    // subscribe to the answers
+    kwiz.socket.on('nbRep', function (nbRep, questionId, option){
+        kwiz.counter = nbRep;
+        let cpt = 0;
+
+        //Evolution de la grille quand un joueur sélectionne une réponse.
+        for (i=0; i<nbRep[questionId].length; i++) {
+            document.querySelector("#counter_" + questionId + "_" + i).innerHTML =
+                kwiz.counter[questionId][i] + "/" + kwiz.clients_nb;
+            cpt = cpt + kwiz.counter[questionId][i];
+            if (cpt === kwiz.clients_nb){
+                kwiz.socket.emit("stopQuestion", questionId, nbRep, option)
+            }
+        }
+    });
+
+    var buttonPseudo = document.querySelector("#firstBtn");
+    var buttonGo = document.getElementById("letsGo");
+    buttonPseudo.addEventListener("click", myFunctionVerif);
+    buttonGo.addEventListener("click", myFunctionGo);
+
+    kwiz.socket.on('begin', function (boole) {
+        if (boole === "true") {
+            document.getElementById(questions.style.visibility = 'visible');
+            document.getElementById(letsGo.style.visibility = 'hidden');
+        }
+    });
+
+    kwiz.socket.on("disRadio", function (questionId, nbRep, option) {
+        for (i=0; i<nbRep[questionId].length; i++) {
+            document.querySelector("#radio_" + questionId + "_" + i).disabled = true;
+            let label = kwiz.quiz_elem[questionId]["label"][i].getAttribute("for");
+            label = label.split('_');
+            console.log("answer :"+ kwiz.quiz[i].answer === option )
+
+        }
+    })
 };
+
+
 
 kwiz.setupUI = function () {
     //retrieve the content
@@ -91,47 +168,41 @@ kwiz.createQuestions = function (data) {
     }
 };
 
+// triggered at a click
 kwiz.createClickListener = function (radio, questionId, option) {
     radio.onclick = function () {
-        console.log(kwiz.get_answers_counts + "=====");
-        //Evolution de la grille quand un joueur sélectionne une réponse.
-        if (questionId==="q1"){
-            document.querySelector("#counter_q1_0").innerHTML= 7 + "/" + kwiz.clients_nb;
-            document.querySelector("#counter_q1_2").innerHTML= 7 + "/" + kwiz.clients_nb;
-            document.querySelector("#counter_q1_1").innerHTML= 7 + "/" + kwiz.clients_nb;
-        } if (questionId==="q2"){
-            document.querySelector("#counter_q2_0").innerHTML= 7 + "/" + kwiz.clients_nb;
-            document.querySelector("#counter_q2_1").innerHTML= 7 + "/" + kwiz.clients_nb;
-            document.querySelector("#counter_q2_2").innerHTML= 7 + "/" + kwiz.clients_nb;
-        } if (questionId==="q3") {
-            document.querySelector("#counter_q3_0").innerHTML= 7 + "/" + kwiz.clients_nb;
-            document.querySelector("#counter_q3_1").innerHTML= 7 + "/" + kwiz.clients_nb;
-            document.querySelector("#counter_q3_2").innerHTML= 7 + "/" + kwiz.clients_nb;
-        }
-
-        //Evolution de la grille quand tous les joueurs ont sélectionné une réponse à une question
-        if ("nbJcheck" === "nbJtot"){
-
-        }
+        kwiz.socket.emit('getNbClients');
+        kwiz.socket.emit('mesRep', kwiz.socket.id, questionId, option);
+        kwiz.socket.emit('getNbRep', questionId, option);
 
         //réponse à la question 1
         kwiz.quiz[0].answer;
 
-        console.log("question", questionId, "\n", "option", option);
+        //console.log("question", questionId, "\n", "option", option);
     }
 };
 
-kwiz.socket.on('clientConnected', function (nbCli) {
-    console.log("Nouveau client");
-    document.getElementById(nbPlayers.innerHTML = "Nombre de joueurs : " + nbCli);
-});
+// conection options to kwiz
+kwiz.connect = function () {
+    kwiz.socket.on('Connexion', function (nbCli) {
+        document.getElementById(nbPlayers.innerHTML = "Nombre de joueurs : " + nbCli);
+    });
 
+    kwiz.socket.on('Disconnexion', function (nbCli) {
+        document.getElementById(nbPlayers.innerHTML = "Nombre de joueurs : " + nbCli);
+    });
+}
 
-kwiz.socket.on('clientDisconnected', function (nbCli) {
-    console.log("Client déco");
-    document.getElementById(nbPlayers.innerHTML = "Nombre de joueurs : " + nbCli);
-});
+// Pseudo verification
+function myFunctionVerif() {
+    kwiz.socket.emit('pseudoCheck', pseudo.value);
+    kwiz.socket.emit('getNbClients');
+}
 
+//Rend visible la suite du site, et invisible la partie précédente
+function myFunctionGo() {
+    kwiz.socket.emit("play");
+}
 
 
 
