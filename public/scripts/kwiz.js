@@ -4,6 +4,7 @@ kwiz = {
     content: 'undefined',
     counter: 'undefined',
     clients_nb: 0,
+    scoreFinal : 0,
     quiz: undefined
 };
 
@@ -11,22 +12,30 @@ kwiz.start = function () {
     kwiz.setupUI();
     kwiz.socket = io('http://localhost:8080');
     kwiz.connect();
-    // create the quiz questions
+
+    // Create the buttons
+    const buttonPseudo = document.querySelector("#firstBtn");
+    const buttonGo = document.getElementById("letsGo");
+    buttonPseudo.addEventListener("click", myFunctionVerif);
+    buttonGo.addEventListener("click", myFunctionGo);
+
+    // Create the quiz questions
     kwiz.socket.on('quiz', kwiz.createQuestions);
 
-    // wait for number of clients
+    // Waiting for number of clients
     kwiz.socket.on('nbClients', function(clients_nb) {
         kwiz.clients_nb = clients_nb;
         document.getElementById(nbPlayers.innerHTML = "Nombre de joueurs : "+ clients_nb );
     });
 
-    // print the players in the table
+    // Print the players in the table
     kwiz.socket.on("listeCl", function (list_clients) {
-
+        // Delete all the clients in the table
         while (document.getElementById("scoreTable").firstChild) {
             document.getElementById("scoreTable").removeChild(document.getElementById("scoreTable").firstChild);
         }
 
+        // Print the actualised list of clients in the table
         for (i=0; i<list_clients.length; i++){
             if (list_clients[i] !== null) {
                 let player = document.createTextNode(list_clients[i]);
@@ -35,10 +44,9 @@ kwiz.start = function () {
         }
     });
 
-    // check if "pseudo" exists and go to the next step
-    kwiz.socket.on('existant', function(existant) {
-        //Si le pseudo est déjà pris par un autre joueur
-        if (existant === "true") {
+    // Check if the player's pseudo already exists and go to the next step
+    kwiz.socket.on('pseudoPris', function(exist) {
+        if (exist === "true") {
             window.alert("Pseudo impossible à pourvoir. ");
         } else {
             document.getElementById(namePlayer.style.visibility='visible');
@@ -49,41 +57,52 @@ kwiz.start = function () {
         }
     });
 
-    // subscribe to the answers
+    // Subscribe to the answers
     kwiz.socket.on('nbRep', function (nbRep, questionId, option){
         kwiz.counter = nbRep;
         let cpt = 0;
+        let send = false;
 
-        //Evolution de la grille quand un joueur sélectionne une réponse.
+        // Make sure a player answered to a question
         for (i=0; i<nbRep[questionId].length; i++) {
-            document.querySelector("#counter_" + questionId + "_" + i).innerHTML =
-                kwiz.counter[questionId][i] + "/" + kwiz.clients_nb;
-            cpt = cpt + kwiz.counter[questionId][i];
+            if (document.querySelector("#radio_" + questionId + "_" + i).checked === true) {
+                send = true;
+            }
+        }
+
+        // Grid evolution when a player checks an answer
+        for (i=0; i<nbRep[questionId].length; i++) {
+            if (send === true) {
+                document.querySelector("#counter_" + questionId + "_" + i).innerHTML =
+                    kwiz.counter[questionId][i] + "/" + kwiz.clients_nb;
+            }
+            cpt += kwiz.counter[questionId][i];
             if (cpt === kwiz.clients_nb){
                 kwiz.socket.emit("stopQuestion", questionId, nbRep, option)
             }
         }
     });
 
-    var buttonPseudo = document.querySelector("#firstBtn");
-    var buttonGo = document.getElementById("letsGo");
-    buttonPseudo.addEventListener("click", myFunctionVerif);
-    buttonGo.addEventListener("click", myFunctionGo);
-
+    // Make the game begin
     kwiz.socket.on('begin', function (boole) {
         if (boole === "true") {
+            document.getElementById("score").innerHTML = "Votre sore : " + kwiz.scoreFinal
             document.getElementById(questions.style.visibility = 'visible');
             document.getElementById(letsGo.style.visibility = 'hidden');
         }
     });
 
+    // Happen when all clients answered to one question
     kwiz.socket.on("disRadio", function (questionId, nbRep, option) {
         for (i=0; i<nbRep[questionId].length; i++) {
             document.querySelector("#radio_" + questionId + "_" + i).disabled = true;
-            let label = kwiz.quiz_elem[questionId]["label"][i].getAttribute("for");
-            label = label.split('_');
-            console.log("answer :"+ kwiz.quiz[i].answer === option )
-
+            let maRep = kwiz.quiz_elem[questionId]["label"][i].firstChild.data;
+            let vraieRep = kwiz.quiz[questionId.split('q')[1]-1].answer;
+            if (maRep === vraieRep){
+                kwiz.quiz_elem[questionId]["label"][i].style.color = "green"
+            } else {
+                kwiz.quiz_elem[questionId]["label"][i].style.color = "red"
+            }
         }
     })
 };
@@ -168,21 +187,22 @@ kwiz.createQuestions = function (data) {
     }
 };
 
-// triggered at a click
+// Triggered at a click
 kwiz.createClickListener = function (radio, questionId, option) {
     radio.onclick = function () {
         kwiz.socket.emit('getNbClients');
         kwiz.socket.emit('mesRep', kwiz.socket.id, questionId, option);
         kwiz.socket.emit('getNbRep', questionId, option);
 
-        //réponse à la question 1
-        kwiz.quiz[0].answer;
-
-        //console.log("question", questionId, "\n", "option", option);
+        // Print the score of the client
+        if (option === kwiz.quiz[questionId.split('q')[1]-1].answer){
+            kwiz.scoreFinal += 1;
+            document.getElementById("score").innerHTML = "Votre sore : " + kwiz.scoreFinal
+        }
     }
 };
 
-// conection options to kwiz
+// Connexions options to kwiz
 kwiz.connect = function () {
     kwiz.socket.on('Connexion', function (nbCli) {
         document.getElementById(nbPlayers.innerHTML = "Nombre de joueurs : " + nbCli);
@@ -190,6 +210,7 @@ kwiz.connect = function () {
 
     kwiz.socket.on('Disconnexion', function (nbCli) {
         document.getElementById(nbPlayers.innerHTML = "Nombre de joueurs : " + nbCli);
+        kwiz.socket.emit("getNbClients");
     });
 }
 
@@ -199,7 +220,7 @@ function myFunctionVerif() {
     kwiz.socket.emit('getNbClients');
 }
 
-//Rend visible la suite du site, et invisible la partie précédente
+// Make visible the next step, and invisible the past step
 function myFunctionGo() {
     kwiz.socket.emit("play");
 }
