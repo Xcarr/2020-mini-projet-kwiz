@@ -24,8 +24,6 @@ app.use(express.static(__dirname + '/public'))
 
 // Subscribe to a client connexion
 io.on('connection', function (socket) {
-    console.log('Un client est connecté !');
-    console.log(kwiz.clients_count());
     let clientID = socket.id;
     kwiz.add_client(clientID);
 
